@@ -20,3 +20,5 @@ Python C-Style Shellcode Injector, armed with XOR, MD5-based, brute-force decryp
 `Key Found! Trying to find suitable process to inject. Please wait...`
 
 `Success! PID: 14292 - ProcName: notepad++.exe`
+
+De-Obfuscate your idea and pull-request it ;)
